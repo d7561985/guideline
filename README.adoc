@@ -1,0 +1,50 @@
+= Golang micro-services guideline
+
+== README
+
+== Health check
+Health check should check all repo stack for responsibility.
+
+Each linked database should pinged (`SELECT 1`)
+
+=== HTTP
+Service always should provide `/health` endpoint.
+
+==== response status code
+Header status should always be: `200`. Real status code should be in body.
+
+==== response body
+Successful response <string>: `OK`
+
+Example:
+
+[source,json]
+----
+{"status":200, "response":"OK"}
+----
+
+=== gRPC
+Service should always provide
+
+* Each linked database should pinged (`SELECT 1`)
+
+* Each gRPC service should provide
+
+WARNING: On error we always should write in stdout errors vise-versa we don't understand what is going on.
+
+== Code-generation
+For easyjson / gRPC we let CI to do that. But for mock developer save in repo generated data.
+
+Makefile:
+[source,bash]
+----
+generate:
+	rm -vf model/*easyjson.go
+	go generate \
+		model/xxx.go \
+		model/yyy.go \
+		model/zzz.go
+	go generate ./...
+----
+
+== Open tracing
