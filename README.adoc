@@ -2,18 +2,36 @@
 
 == README
 
+== Configuration
+IMPORTANT: Configuration must be represented only via `ENV`. Don't confuse with app launch args - they only response on job execution
+
+Configuration package must be located in `internal` folder as `config` package.
+https://github.com/joho/godotenv[godotenv] is dev standard and link of it should be performed in `config` package.
+
+=== Viper
+
+== Application launch args
+=== runserver
+=== up
+=== fixtures
+
 == Health check
+
 Health check should check all repo stack for responsibility.
 
 Each linked database should pinged (`SELECT 1`)
 
-=== HTTP
+=== RESTful
+
 Service always should provide `/health` endpoint.
 
 ==== response status code
-Header status should always be: `200`. Real status code should be in body.
+
+Header status should always be: `200`.
+Real status code should be in body.
 
 ==== response body
+
 Successful response <string>: `OK`
 
 Example:
@@ -24,6 +42,7 @@ Example:
 ----
 
 === gRPC
+
 Service should always provide
 
 * Each linked database should pinged (`SELECT 1`)
@@ -33,9 +52,12 @@ Service should always provide
 WARNING: On error we always should write in stdout errors vise-versa we don't understand what is going on.
 
 == Code-generation
-For easyjson / gRPC we let CI to do that. But for mock developer save in repo generated data.
+
+For easyjson / gRPC we let CI to do that.
+But for mock developer save in repo generated data.
 
 Makefile:
+
 [source,bash]
 ----
 generate:
@@ -47,4 +69,92 @@ generate:
 	go generate ./...
 ----
 
+== Validation
+
+=== RESTful
+
+=== gRPC
+
+== DAO / models
+
+Data access object represented located in `model` folder
+
+=== lib go-pg
+
+==== bool
+
+by default go-pg try all default values
+
+[example,go]
+----
+Enabled bool   `json:"enabled" pg:",use_zero"`
+----
+
+== migration
+
+== Fizz via github.com/gobuffalo/pop
+
+DSL spec: https://gobuffalo.io/en/docs/db/fizz/
+Advantages:
+
+* Declarative way migration handling.
+* Up / Down support
+* own DSL with supporting most popular DBMS (also cockroach)
+
 == Open tracing
+
+== Linter
+Lint should be part of CI. Stack of lint:
+[source,bash]
+--
+go fmt ./...
+go vet ./...
+golangci-lint run
+--
+
+=== golangci-lint
+IMPORTANT: `.golangci.yml` file helps adjust linter and add some exceptions.
+
+Get:
+[source,bash]
+----
+$ GO111MODULE=off go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
+----
+
+Convention part  `.golangci.yml`:
+[source,yaml]
+--
+run:
+# default concurrency is a available CPU number
+concurrency: 4
+
+  # timeout for analysis, e.g. 30s, 5m, default is 1m
+  timeout: 5m
+
+  # exit code when at least one issue was found, default is 1
+  issues-exit-code: 1
+
+  # include test files or not, default is true
+  tests: false
+
+  # list of build tags, all linters use it. Default is empty list.
+  build-tags:
+    #- database unit
+
+
+linters:
+  enable:
+  #- megacheck
+  #- govet
+  enable-all: true
+  disable:
+    - lll
+    - gochecknoglobals
+    - dupl
+    - golint
+  disable-all: false
+  presets:
+    #- bugs
+    #- unused
+  fast: false
+--
