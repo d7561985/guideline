@@ -158,3 +158,31 @@ linters:
     #- unused
   fast: false
 --
+
+== Test
+All test files should be tagged via `+build` notion.
+Example:
+[source,go]
+--
+// +build database
+--
+
+Convention of test tags:
+
+* disable - test / file disabled. This convention also used in go SDK
+* unit - for most delivery, usecase. Also tests  with dependency injection.
+* database - this test require database on own environment,
+* integration - this test require all external dependances.
+
+also we can add own tag's when we need create special option for testing with special environment
+
+=== Unit
+If test required some preparation for execution (mock structure init, creation listner, init service) all test should
+wrapped in *suite* sub-package of *github.com/stretchr/testify* package
+
+All test condition should use `assert` sub-package from *github.com/stretchr/testify* package for checks.
+
+NOTE: `assert` already part of `suit` structure
+
+==== Database test
+IMPORTANT: All foreign keys should use *github.com/jackc/fake* package generation. No magic constants.
