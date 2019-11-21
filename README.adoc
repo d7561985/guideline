@@ -19,6 +19,8 @@ https://github.com/joho/godotenv[godotenv] is dev standard and link of it should
 
 Health check should check all repo stack for responsibility.
 
+IMPORTANT: do not forget to  log in stderr about problems. Silence can't help with solving unhealth service reason!
+
 Each linked database should pinged (`SELECT 1`)
 
 === RESTful
@@ -177,7 +179,7 @@ Convention of test tags:
 also we can add own tag's when we need create special option for testing with special environment
 
 === Unit
-If test required some preparation for execution (mock structure init, creation listner, init service) all test should
+If test required some preparation for execution (mock structure init, creation listner, init service) then it should be
 wrapped in *suite* sub-package of *github.com/stretchr/testify* package
 
 All test condition should use `assert` sub-package from *github.com/stretchr/testify* package for checks.
